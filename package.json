@@ -1,15 +1,7 @@
 {
-  "name": "uigrid",
+  "name": "uigrid-view",
   "version": "1.0.0",
   "description": "Preview websites on different screen sizes in a unified grid view",
-  "main": "index.js",
-  "bin": {
-    "uigrid": "./bin/cli.js"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "demo": "node bin/cli.js example"
-  },
   "keywords": [
     "responsive",
     "preview",
@@ -21,13 +13,34 @@
     "desktop",
     "tablet"
   ],
-  "author": "",
-  "license": "MIT",
+  "homepage": "https://github.com/MilanDroid/uigrid#readme",
+  "bugs": {
+    "url": "https://github.com/MilanDroid/uigrid/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MilanDroid/uigrid.git"
+  },
+  "license": "GPL-3.0",
+  "author": "Antony Brenes (MilanDroid)",
+  "type": "commonjs",
+  "main": "index.js",
+  "bin": {
+    "uigrid": "bin/cli.js"
+  },
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "demo": "node bin/cli.js example"
+  },
   "dependencies": {
     "express": "^4.18.2",
     "open": "^9.1.0",
     "commander": "^11.1.0"
   },
+  "devDependencies": {},
   "engines": {
     "node": ">=14.0.0"
   }
