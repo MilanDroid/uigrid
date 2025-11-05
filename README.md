@@ -44,7 +44,7 @@ UIGrid provides a responsive preview interface that can display any URL across m
 Start UIGrid without serving any files:
 
 ```bash
-uigrid-view
+uigrid
 ```
 
 Then enter any URL in the browser interface (e.g., `http://localhost:3000`, `https://example.com`).
@@ -54,7 +54,7 @@ Then enter any URL in the browser interface (e.g., `http://localhost:3000`, `htt
 Start UIGrid and automatically serve a directory on `localhost`:
 
 ```bash
-uigrid-view ./dist
+uigrid ./dist
 ```
 
 This will:
@@ -65,7 +65,7 @@ This will:
 ### Custom Port
 
 ```bash
-uigrid-view ./dist -p 5000
+uigrid ./dist -p 5000
 ```
 
 This will:
@@ -75,13 +75,13 @@ This will:
 ### Don't Auto-Open Browser
 
 ```bash
-uigrid-view --no-open
+uigrid --no-open
 ```
 
 ### Command Options
 
 ```bash
-uigrid-view [directory] [options]
+uigrid [directory] [options]
 
 Arguments:
   directory              Optional directory to serve via localhost
@@ -100,7 +100,7 @@ Options:
 Serve a directory and preview it:
 
 ```bash
-uigrid-view ./build
+uigrid ./build
 ```
 
 UIGrid will:
@@ -114,7 +114,7 @@ UIGrid will:
 npm run dev
 
 # In another terminal, start UIGrid
-uigrid-view
+uigrid
 ```
 
 Then enter `http://localhost:5173` in the UIGrid interface.
@@ -126,7 +126,7 @@ Then enter `http://localhost:5173` in the UIGrid interface.
 npm run dev
 
 # In another terminal, start UIGrid on a different port
-uigrid-view -p 4000
+uigrid -p 4000
 ```
 
 Then enter `http://localhost:3000` in the UIGrid interface.
@@ -138,7 +138,7 @@ Then enter `http://localhost:3000` in the UIGrid interface.
 npm start
 
 # In another terminal, start UIGrid on a different port
-uigrid-view -p 5000
+uigrid -p 5000
 ```
 
 Then enter `http://localhost:3000` in the UIGrid interface.
@@ -149,11 +149,11 @@ You can run multiple instances of UIGrid to serve different directories:
 
 ```bash
 # Terminal 1: Serve project A
-uigrid-view ./project-a -p 3000
+uigrid ./project-a -p 3000
 # File server on 3001
 
 # Terminal 2: Serve project B
-uigrid-view ./project-b -p 4000
+uigrid ./project-b -p 4000
 # File server on 4001
 ```
 
