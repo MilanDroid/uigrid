@@ -155,7 +155,7 @@ function getPreviewHTML(defaultURL = '') {
       display: grid;
       grid-gap: 10px;
       grid-template-columns: repeat(auto-fill, minmax(30vw,1fr));
-      grid-auto-rows: 20px;
+      grid-auto-rows: 60px;
       margin-bottom: 20px;
     }
 
@@ -169,6 +169,10 @@ function getPreviewHTML(defaultURL = '') {
       transition: all 0.3s ease;
     }
 
+    .viewport.collapsed .viewport-content {
+      display: none;
+    }
+
     .viewport-header {
       padding: 12px 16px;
       background: var(--bg-header);
@@ -178,6 +182,14 @@ function getPreviewHTML(defaultURL = '') {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
+    }
+
+    .viewport-header .device-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
     .viewport-header .device-name {
@@ -187,6 +199,36 @@ function getPreviewHTML(defaultURL = '') {
     .viewport-header .dimensions {
       color: var(--text-light);
       font-size: 12px;
+    }
+
+    .viewport-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .viewport-action-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .viewport-action-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .viewport-action-btn:active {
+      transform: scale(0.95);
     }
 
     .viewport-content {
@@ -274,45 +316,59 @@ function getPreviewHTML(defaultURL = '') {
       }
     }
 
-    function createViewport(device) {
+    function createViewport(device, index) {
       const containerWidth = document.getElementById('viewportGrid').children[0].offsetWidth;
       const aspectRatio = device.width / device.height;
       const displayHeight = containerWidth / aspectRatio;
       const scale = displayHeight / device.height;
 
       return \`
-        <div class="viewport">
+        <div class="viewport" data-viewport-index="\${index}">
           <div class="viewport-header">
-            <span class="device-name">\${device.name}</span>
-            <span class="dimensions">\${device.width} × \${device.height}</span>
+            <div class="device-info">
+              <span class="device-name">\${device.name}</span>
+              <span class="dimensions">\${device.width} × \${device.height}</span>
+            </div>
+            <div class="viewport-actions">
+              <button class="viewport-action-btn" onclick="toggleCollapse(\${index})" title="Collapse/Expand">
+                <span class="collapse-icon">▼</span>
+              </button>
+            </div>
           </div>
           <div class="viewport-content" style="height: \${displayHeight}px; width: \${containerWidth}px;">
             <iframe
               class="viewport-frame"
               data-device="\${device.name}"
+              data-height="\${device.height}"
+              data-aspect-ratio="\${aspectRatio}"
+              data-viewport-index="\${index}"
               style="width: \${device.width}px; height: \${device.height}px; transform: scale(\${scale});"
             ></iframe>
           </div>
         </div>
       \`;
     }
-
-    function initializeViewports() {
-      const grid = document.getElementById('viewportGrid');
-      grid.innerHTML = devices.map(device => createViewport(device)).join('');
-      resizeAllGridItems();
-      window.addEventListener("resize", () => {
-        grid.innerHTML = devices.map(device => createViewport(device)).join('');
+    
+    const resetGrid = () => {
+        const grid = document.getElementById('viewportGrid');
+        grid.innerHTML = devices.map((device, index) => createViewport(device, index)).join('');
+        // Restore states after resize
+        viewportStates.forEach((state, index) => {
+          const viewport = document.querySelector(\`.viewport[data-viewport-index="\${index}"]\`);
+          if (state.collapsed) {
+            viewport.classList.add('collapsed');
+            viewport.querySelector('.collapse-icon').textContent = '▶';
+          }
+        });
         resizeAllGridItems();
         updateAllFrames();
-      });
-
-      // Load default URL if provided
-      const urlInput = document.getElementById('urlInput');
-      if (urlInput.value.trim()) {
-        updateAllFrames();
-      }
     }
+
+    // Store viewport states
+    const viewportStates = devices.map(() => ({
+      collapsed: false,
+      currentUrl: ''
+    }));
 
     function updateAllFrames() {
       const urlInput = document.getElementById('urlInput');
@@ -323,9 +379,41 @@ function getPreviewHTML(defaultURL = '') {
       }
 
       const frames = document.querySelectorAll('.viewport-frame');
-      frames.forEach(frame => {
-        frame.src = url;
+      frames.forEach((frame, index) => {
+        // Only update if not collapsed or if expanding
+        const viewport = frame.closest('.viewport');
+        if (!viewport.classList.contains('collapsed')) {
+          frame.src = url;
+          viewportStates[index].currentUrl = url;
+        }
       });
+    }
+
+    // Viewport collapse functionality
+    function toggleCollapse(index) {
+      const viewport = document.querySelector(\`.viewport[data-viewport-index="\${index}"]\`);
+      const iframe = viewport.querySelector('.viewport-frame');
+      const collapseIcon = viewport.querySelector('.collapse-icon');
+
+      viewportStates[index].collapsed = !viewportStates[index].collapsed;
+
+      if (viewportStates[index].collapsed) {
+        // Collapsing: save current URL and clear iframe
+        viewportStates[index].currentUrl = iframe.src;
+        iframe.src = 'about:blank';
+        viewport.classList.add('collapsed');
+        collapseIcon.textContent = '▶';
+      } else {
+        // Expanding: restore URL from state or use current input value
+        const urlToLoad = viewportStates[index].currentUrl || document.getElementById('urlInput').value.trim();
+        if (urlToLoad && urlToLoad !== 'about:blank') {
+          iframe.src = urlToLoad;
+        }
+        viewport.classList.remove('collapsed');
+        collapseIcon.textContent = '▼';
+      }
+
+      resizeAllGridItems();
     }
 
     // Dark mode functionality
@@ -346,6 +434,19 @@ function getPreviewHTML(defaultURL = '') {
       if (savedDarkMode === 'true' || !savedDarkMode) {
         document.body.classList.add('dark-mode');
         document.getElementById('themeIcon').textContent = '🌙';
+      }
+    }
+
+    function initializeViewports() {
+      const grid = document.getElementById('viewportGrid');
+      grid.innerHTML = devices.map((device, index) => createViewport(device, index)).join('');
+      resizeAllGridItems();
+      window.addEventListener("resize", resetGrid);
+
+      // Load default URL if provided
+      const urlInput = document.getElementById('urlInput');
+      if (urlInput.value.trim()) {
+        updateAllFrames();
       }
     }
 
