@@ -4,10 +4,10 @@ A simple CLI tool to preview your website on different screen sizes simultaneous
 
 ## Features
 
-- Preview your website across 6 different device sizes at once
-- Live reloading when you change files
+- Preview any URL across 6 different device sizes at once
 - Simple CLI interface
-- Works with any static website or local development server
+- Optional built-in static file server for local directories
+- Works with any development server (Vite, Next.js, Create React App, etc.)
 - Automatically opens in your default browser
 
 ## Device Sizes Included
@@ -35,42 +35,40 @@ npm install uigrid
 
 ## Usage
 
-UIGrid works in two modes:
+UIGrid provides a responsive preview interface that can display any URL across multiple device sizes. Optionally, you can have UIGrid start a local file server for a directory.
 
-1. **Directory Mode**: Serves static files from a local directory
-2. **URL Mode**: Previews an already-running development server
+### Basic Usage
 
-### Basic Usage - Directory Mode
-
-Navigate to your project directory and run:
+Start UIGrid without serving any files:
 
 ```bash
 uigrid
 ```
 
-This will serve the current directory and open the preview in your browser.
+Then enter any URL in the browser interface (e.g., `http://localhost:3000`, `https://example.com`).
 
-### Serve a Specific Directory
+### Serve a Local Directory
+
+Start UIGrid and automatically serve a directory on `localhost`:
 
 ```bash
 uigrid ./dist
 ```
 
-### Preview a Running Development Server (URL Mode)
-
-If you already have a dev server running (webpack-dev-server, Vite, Next.js, etc.):
-
-```bash
-uigrid http://localhost:8080
-```
-
-This will preview your running application across all device sizes without serving any files itself.
+This will:
+- Start the UIGrid preview on port `3000`
+- Start a file server for `./dist` on port `3001`
+- Pre-populate the URL input with `http://localhost:3001`
 
 ### Custom Port
 
 ```bash
-uigrid -p 4000
+uigrid ./dist -p 5000
 ```
+
+This will:
+- Start UIGrid preview on port `5000`
+- Start file server on port `5001`
 
 ### Don't Auto-Open Browser
 
@@ -78,91 +76,103 @@ uigrid -p 4000
 uigrid --no-open
 ```
 
-### All Options
+### Command Options
 
 ```bash
-uigrid [target] [options]
+uigrid [directory] [options]
 
 Arguments:
-  target                 Directory to serve OR URL to preview (default: current directory)
-                         Examples: ./dist, http://localhost:8080, https://localhost:3000
+  directory              Optional directory to serve via localhost
 
 Options:
-  -p, --port <port>      Port to run the UIGrid server on (default: 3000)
+  -p, --port <port>      Port for the UIGrid preview (default: 3000)
+                         File server uses port + 1 if directory provided
   -n, --no-open          Do not open browser automatically
   -h, --help             Display help
 ```
 
 ## Examples
 
-### Preview a Build Directory
+### Preview Local Static Files
+
+Serve a directory and preview it:
 
 ```bash
 uigrid ./build
 ```
 
+UIGrid will:
+- Preview interface: `http://localhost:3000`
+- File server: `http://localhost:3001` (automatically loaded)
+
 ### Preview a Vite Dev Server
 
 ```bash
-# Start your Vite server first (usually on port 5173)
+# Start your Vite server (usually on port 5173)
 npm run dev
 
-# In another terminal, preview it with UIGrid
-uigrid http://localhost:5173
+# In another terminal, start UIGrid
+uigrid
 ```
+
+Then enter `http://localhost:5173` in the UIGrid interface.
 
 ### Preview a Next.js App
 
 ```bash
-# Start your Next.js server first (usually on port 3000)
+# Start Next.js (usually on port 3000)
 npm run dev
 
-# In another terminal, use a different port for UIGrid
-uigrid http://localhost:3000 -p 4000
+# In another terminal, start UIGrid on a different port
+uigrid -p 4000
 ```
+
+Then enter `http://localhost:3000` in the UIGrid interface.
 
 ### Preview Create React App
 
 ```bash
-# Start your CRA server first (usually on port 3000)
+# Start CRA (usually on port 3000)
 npm start
 
-# In another terminal
-uigrid http://localhost:3000 -p 4000
-```
-
-### Use a Custom Port
-
-```bash
+# In another terminal, start UIGrid on a different port
 uigrid -p 5000
 ```
 
-### Preview Public Folder Without Opening Browser
+Then enter `http://localhost:3000` in the UIGrid interface.
+
+### Serve Multiple Directories
+
+You can run multiple instances of UIGrid to serve different directories:
 
 ```bash
-uigrid ./public --no-open
+# Terminal 1: Serve project A
+uigrid ./project-a -p 3000
+# File server on 3001
+
+# Terminal 2: Serve project B
+uigrid ./project-b -p 4000
+# File server on 4001
 ```
+
+Then you can compare both projects by switching URLs in the interface.
 
 ## How It Works
 
-### Directory Mode
-1. UIGrid starts a local Express server
-2. Serves your specified directory as static files
-3. Opens a browser with a grid layout showing your site at multiple screen sizes
-4. Each viewport is an iframe scaled to the appropriate device dimensions
-
-### URL Mode
-1. UIGrid starts a local Express server for the preview interface
-2. All iframes point directly to your specified URL
-3. Your existing development server continues to run independently
-4. Perfect for previewing apps with hot module replacement (HMR) or server-side rendering
+1. UIGrid starts an Express server for the preview interface on your specified port (default: 3000)
+2. If you provide a directory, UIGrid starts a second Express server on port + 1 (default: 3001) to serve those static files
+3. The preview interface displays a grid of 6 iframes, each scaled to different device dimensions
+4. Enter any URL in the input field to load it across all device sizes simultaneously
+5. All iframes point to the URL you specify - either your file server, dev server, or any other URL
 
 ## Tips
 
-- Make sure your website has an `index.html` file in the root directory
-- You can change the URL path in the preview interface to view different pages
-- The tool works best with responsive websites
-- Press Ctrl+C in the terminal to stop the server
+- You can change the URL in the preview interface at any time to load different sites
+- When serving a directory, make sure it has an `index.html` file in the root
+- If using a custom port with `-p`, remember the file server will use port + 1
+- Works great with development servers that have hot module replacement (HMR)
+- You can preview any publicly accessible URL, not just localhost
+- Press Ctrl+C in the terminal to stop all servers
 
 ## Use Cases
 

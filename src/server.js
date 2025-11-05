@@ -2,32 +2,53 @@ const express = require('express');
 const open = require('open');
 const { getPreviewHTML } = require('./template');
 
-async function startServer(targetDir, targetURL, port, shouldOpen) {
-  const app = express();
+async function startServer(targetDir, port, shouldOpen) {
+  const previewApp = express();
+  let fileServerPort = null;
+  let defaultURL = '';
 
-  // Determine if we're in URL mode or directory mode
-  const isURLMode = targetURL !== null;
+  // If a directory is provided, start a file server for it
+  if (targetDir) {
+    fileServerPort = port + 1;
+    const fileApp = express();
+    fileApp.use(express.static(targetDir));
 
-  // Serve the preview interface at root
-  app.get('/', (req, res) => {
-    res.send(getPreviewHTML(isURLMode, targetURL));
-  });
+    await new Promise((resolve, reject) => {
+      const fileServer = fileApp.listen(fileServerPort, (err) => {
+        if (err) {
+          if (err.code === 'EADDRINUSE') {
+            reject(new Error(`Port ${fileServerPort} is already in use. The file server needs port ${fileServerPort}.`));
+          } else {
+            reject(err);
+          }
+          return;
+        }
+        console.log(`File server running at: http://localhost:${fileServerPort}`);
+        console.log(`Serving: ${targetDir}`);
+        resolve(fileServer);
+      });
 
-  // Only serve static files if we're in directory mode
-  if (!isURLMode) {
-    app.use('/site', express.static(targetDir));
+      fileServer.on('error', reject);
+    });
+
+    defaultURL = `http://localhost:${fileServerPort}`;
   }
 
-  // Start the server
+  // Serve the preview interface at root
+  previewApp.get('/', (req, res) => {
+    res.send(getPreviewHTML(defaultURL));
+  });
+
+  // Start the preview server
   return new Promise((resolve, reject) => {
-    const server = app.listen(port, async (err) => {
+    const server = previewApp.listen(port, async (err) => {
       if (err) {
         reject(err);
         return;
       }
 
       const url = `http://localhost:${port}`;
-      console.log(`\nUIGrid is running at: ${url}`);
+      console.log(`\nUIGrid preview running at: ${url}`);
       console.log(`\nPress Ctrl+C to stop the server\n`);
 
       if (shouldOpen) {

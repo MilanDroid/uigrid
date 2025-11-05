@@ -1,8 +1,4 @@
-function getPreviewHTML(isURLMode = false, targetURL = '') {
-  const defaultPath = isURLMode ? targetURL : '/index.html';
-  const inputLabel = isURLMode ? 'URL:' : 'URL Path:';
-  const inputPlaceholder = isURLMode ? 'http://localhost' : '/index.html';
-
+function getPreviewHTML(defaultURL = '') {
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -150,18 +146,18 @@ function getPreviewHTML(isURLMode = false, targetURL = '') {
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>UIGrid - Responsive Preview</h1>
-    <p>Preview your website across multiple screen sizes simultaneously</p>
-  </div>
+<!--  <div class="header">-->
+<!--    <h1>UIGrid - Responsive Preview</h1>-->
+<!--    <p>Preview your website across multiple screen sizes simultaneously</p>-->
+<!--  </div>-->
 
   <div class="controls">
-    <label for="urlInput">${inputLabel}</label>
+    <label for="urlInput">URL:</label>
     <input
       type="text"
       id="urlInput"
-      placeholder="${inputPlaceholder}"
-      value="${defaultPath}"
+      placeholder="http://localhost:3000"
+      value="${defaultURL}"
     >
     <button onclick="updateAllFrames()">Load</button>
   </div>
@@ -169,8 +165,6 @@ function getPreviewHTML(isURLMode = false, targetURL = '') {
   <div class="grid" id="viewportGrid"></div>
 
   <script>
-    const IS_URL_MODE = ${isURLMode};
-
     const devices = [
       { name: 'iPhone SE', width: 375, height: 667, scale: 1 },
       { name: 'iPhone 14 Pro', width: 393, height: 852, scale: 1 },
@@ -204,58 +198,27 @@ function getPreviewHTML(isURLMode = false, targetURL = '') {
     function initializeViewports() {
       const grid = document.getElementById('viewportGrid');
       grid.innerHTML = devices.map(device => createViewport(device)).join('');
-      updateAllFrames();
-    }
 
-    function isURL(str) {
-      try {
-        new URL(str);
-        return str.startsWith('http://') || str.startsWith('https://');
-      } catch {
-        return false;
+      // Load default URL if provided
+      const urlInput = document.getElementById('urlInput');
+      if (urlInput.value.trim()) {
+        updateAllFrames();
       }
     }
 
     function updateAllFrames() {
       const urlInput = document.getElementById('urlInput');
-      let urlValue = urlInput.value.trim();
+      const url = urlInput.value.trim();
 
-      if (!urlValue) {
+      if (!url) {
         return;
       }
 
       const frames = document.querySelectorAll('.viewport-frame');
-
-      if (IS_URL_MODE) {
-        // In URL mode, use the value directly if it's a URL, or append to base URL
-        if (isURL(urlValue)) {
-          frames.forEach(frame => {
-            frame.src = urlValue;
-          });
-        } else {
-          // Try to append as a path
-          try {
-            const baseURL = document.getElementById('urlInput').placeholder || '${targetURL}';
-            const url = new URL(urlValue, baseURL);
-            frames.forEach(frame => {
-              frame.src = url.href;
-            });
-          } catch {
-            frames.forEach(frame => {
-              frame.src = urlValue;
-            });
-          }
-        }
-      } else {
-        // In directory mode, prefix with /site
-        let urlPath = urlValue;
-        if (!urlPath.startsWith('/')) {
-          urlPath = '/' + urlPath;
-        }
-        frames.forEach(frame => {
-          frame.src = '/site' + urlPath;
-        });
-      }
+      frames.forEach(frame => {
+      console.log(frame, url);
+        frame.src = url;
+      });
     }
 
     // Allow Enter key to load
