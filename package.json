@@ -1,0 +1,34 @@
+{
+  "name": "uigrid",
+  "version": "1.0.0",
+  "description": "Preview websites on different screen sizes in a unified grid view",
+  "main": "index.js",
+  "bin": {
+    "uigrid": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "demo": "node bin/cli.js example"
+  },
+  "keywords": [
+    "responsive",
+    "preview",
+    "viewport",
+    "screen-sizes",
+    "development",
+    "testing",
+    "mobile",
+    "desktop",
+    "tablet"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "open": "^9.1.0",
+    "commander": "^11.1.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

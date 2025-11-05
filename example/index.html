@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UIGrid Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .card p {
+      color: #666;
+      line-height: 1.8;
+    }
+
+    .responsive-text {
+      background: #f7f7f7;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 40px 0;
+      text-align: center;
+    }
+
+    .device-info {
+      font-weight: bold;
+      color: #667eea;
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .header p {
+        font-size: 1rem;
+      }
+
+      .device-info::after {
+        content: " - Mobile/Tablet";
+      }
+    }
+
+    @media (min-width: 769px) {
+      .device-info::after {
+        content: " - Desktop";
+      }
+    }
+
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Welcome to UIGrid</h1>
+    <p>Testing responsive design across multiple devices</p>
+  </div>
+
+  <div class="container">
+    <div class="responsive-text">
+      <p class="device-info">Current Viewport</p>
+      <p>Resize your browser or view in different devices to see responsive changes</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Mobile First</h2>
+        <p>This layout adapts seamlessly from mobile phones to large desktop screens, ensuring a great experience on any device.</p>
+      </div>
+
+      <div class="card">
+        <h2>Flexible Grid</h2>
+        <p>The grid system automatically adjusts the number of columns based on available screen space using CSS Grid.</p>
+      </div>
+
+      <div class="card">
+        <h2>Modern Design</h2>
+        <p>Clean, modern interface with smooth transitions and responsive typography that scales beautifully.</p>
+      </div>
+
+      <div class="card">
+        <h2>Easy Testing</h2>
+        <p>UIGrid makes it simple to preview your designs across multiple screen sizes simultaneously.</p>
+      </div>
+
+      <div class="card">
+        <h2>Live Preview</h2>
+        <p>See changes instantly as you develop, with all viewports updating in real-time.</p>
+      </div>
+
+      <div class="card">
+        <h2>Developer Friendly</h2>
+        <p>Simple CLI interface that works with any static website or development workflow.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 UIGrid Demo - Responsive Design Testing Tool</p>
+  </footer>
+</body>
+</html>
