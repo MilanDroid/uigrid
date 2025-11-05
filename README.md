@@ -16,6 +16,8 @@ A simple CLI tool to preview your website on different screen sizes simultaneous
 - iPhone 14 Pro (393×852)
 - iPad Mini (768×1024)
 - iPad Pro (1024×1366)
+- NetHub (1024x600)
+- Desktop (1366x720)
 - Desktop HD (1920×1080)
 - Desktop 4K (2560×1440)
 
