@@ -21,7 +21,7 @@
     "type": "git",
     "url": "git+https://github.com/MilanDroid/uigrid.git"
   },
-  "license": "GPL-3.0",
+  "license": "GPL-3.0-only",
   "author": "Antony Brenes (MilanDroid)",
   "type": "commonjs",
   "main": "index.js",
