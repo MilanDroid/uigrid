@@ -1,192 +1,72 @@
 # UIGrid
 
-A simple CLI tool to preview your website on different screen sizes simultaneously.
+Preview a website on eight screen sizes at once. One command opens a grid of device frames, all pointed at the same URL, so a responsive bug shows up in the frame where it breaks.
 
-## Features
+[![npm](https://img.shields.io/npm/v/uigrid-view)](https://www.npmjs.com/package/uigrid-view)
 
-- Preview any URL across 6 different device sizes at once
-- Simple CLI interface
-- Optional built-in static file server for local directories
-- Works with any development server (Vite, Next.js, Create React App, etc.)
-- Automatically opens in your default browser
+## Install
 
-## Device Sizes Included
-
-- iPhone SE (375×667)
-- iPhone 14 Pro (393×852)
-- iPad Mini (768×1024)
-- iPad Pro (1024×1366)
-- NetHub (1024x600)
-- Desktop (1366x720)
-- Desktop HD (1920×1080)
-- Desktop 4K (2560×1440)
-
-## Installation
-
-### Global Installation (Recommended)
+Requires Node.js 14 or later.
 
 ```bash
 npm install -g uigrid-view
 ```
 
-### Local Installation
-
-```bash
-npm install uigrid-view
-```
-
-## Usage
-
-UIGrid provides a responsive preview interface that can display any URL across multiple device sizes. Optionally, you can have UIGrid start a local file server for a directory.
-
-### Basic Usage
-
-Start UIGrid without serving any files:
+## Use
 
 ```bash
 uigrid
 ```
 
-Then enter any URL in the browser interface (e.g., `http://localhost:3000`, `https://example.com`).
+This opens the grid at http://localhost:3000. Type any URL into the URL bar, and every frame loads it.
 
-### Serve a Local Directory
-
-Start UIGrid and automatically serve a directory on `localhost`:
+To have UIGrid serve a folder for you:
 
 ```bash
 uigrid ./dist
 ```
 
-This will:
-- Start the UIGrid preview on port `3000`
-- Start a file server for `./dist` on port `3001`
-- Pre-populate the URL input with `http://localhost:3001`
+This serves `./dist` on port 3001 and loads it into the grid.
 
-### Custom Port
+| Option | Meaning | Default |
+|---|---|---|
+| `[directory]` | Folder to serve on the grid's port + 1 | none |
+| `-p`, `--port <port>` | Port for the grid | `3000` |
+| `-n`, `--no-open` | Don't open the browser automatically | browser opens |
 
-```bash
-uigrid ./dist -p 5000
-```
+### With your dev server
 
-This will:
-- Start UIGrid preview on port `5000`
-- Start file server on port `5001`
-
-### Don't Auto-Open Browser
+Start your dev server as usual, then start UIGrid on a port your dev server isn't using:
 
 ```bash
-uigrid --no-open
+npm run dev        # e.g. Next.js on http://localhost:3000
+uigrid -p 4000     # grid on http://localhost:4000
 ```
 
-### Command Options
+Then enter `http://localhost:3000` in the grid. Hot reload keeps working in every frame.
 
-```bash
-uigrid [directory] [options]
+## Devices
 
-Arguments:
-  directory              Optional directory to serve via localhost
+| Device | Width × height |
+|---|---|
+| iPhone SE | 375 × 667 |
+| iPhone 14 Pro | 393 × 852 |
+| iPad Mini | 768 × 1024 |
+| iPad Pro | 1024 × 1366 |
+| Nethub | 1024 × 600 |
+| Desktop | 1366 × 720 |
+| Desktop HD | 1920 × 1080 |
+| Desktop 4K | 2560 × 1440 |
 
-Options:
-  -p, --port <port>      Port for the UIGrid preview (default: 3000)
-                         File server uses port + 1 if directory provided
-  -n, --no-open          Do not open browser automatically
-  -h, --help             Display help
-```
+## Limitations
 
-## Examples
+Each frame is an `<iframe>`, so pages that forbid embedding won't render. Many public sites block it with an `X-Frame-Options` header or a `frame-ancestors` Content Security Policy. Your own dev server and local files usually allow it.
 
-### Preview Local Static Files
+## How it works
 
-Serve a directory and preview it:
-
-```bash
-uigrid ./build
-```
-
-UIGrid will:
-- Preview interface: `http://localhost:3000`
-- File server: `http://localhost:3001` (automatically loaded)
-
-### Preview a Vite Dev Server
-
-```bash
-# Start your Vite server (usually on port 5173)
-npm run dev
-
-# In another terminal, start UIGrid
-uigrid
-```
-
-Then enter `http://localhost:5173` in the UIGrid interface.
-
-### Preview a Next.js App
-
-```bash
-# Start Next.js (usually on port 3000)
-npm run dev
-
-# In another terminal, start UIGrid on a different port
-uigrid -p 4000
-```
-
-Then enter `http://localhost:3000` in the UIGrid interface.
-
-### Preview Create React App
-
-```bash
-# Start CRA (usually on port 3000)
-npm start
-
-# In another terminal, start UIGrid on a different port
-uigrid -p 5000
-```
-
-Then enter `http://localhost:3000` in the UIGrid interface.
-
-### Serve Multiple Directories
-
-You can run multiple instances of UIGrid to serve different directories:
-
-```bash
-# Terminal 1: Serve project A
-uigrid ./project-a -p 3000
-# File server on 3001
-
-# Terminal 2: Serve project B
-uigrid ./project-b -p 4000
-# File server on 4001
-```
-
-Then you can compare both projects by switching URLs in the interface.
-
-## How It Works
-
-1. UIGrid starts an Express server for the preview interface on your specified port (default: 3000)
-2. If you provide a directory, UIGrid starts a second Express server on port + 1 (default: 3001) to serve those static files
-3. The preview interface displays a grid of 6 iframes, each scaled to different device dimensions
-4. Enter any URL in the input field to load it across all device sizes simultaneously
-5. All iframes point to the URL you specify - either your file server, dev server, or any other URL
-
-## Tips
-
-- You can change the URL in the preview interface at any time to load different sites
-- When serving a directory, make sure it has an `index.html` file in the root
-- If using a custom port with `-p`, remember the file server will use port + 1
-- Works great with development servers that have hot module replacement (HMR)
-- You can preview any publicly accessible URL, not just localhost
-- Press Ctrl+C in the terminal to stop all servers
-
-## Use Cases
-
-- Testing responsive designs
-- Client presentations
-- QA testing across devices
-- Development workflow
-- Debugging layout issues
-
-## Requirements
-
-- Node.js 14.0.0 or higher
+- `bin/cli.js`: parses the arguments and decides whether a file server is needed.
+- `src/server.js`: an Express server for the grid, plus a second one on port + 1 when you pass a folder.
+- `src/template.js`: the grid itself, one scaled iframe per device size.
 
 ## License
 
