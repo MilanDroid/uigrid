@@ -70,4 +70,4 @@ Each frame is an `<iframe>`, so pages that forbid embedding won't render. Many p
 
 ## License
 
-GPL-3.0
+GPL-3.0. See [LICENSE](LICENSE).
